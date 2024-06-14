@@ -51,7 +51,7 @@ type Project struct {
 	AreaID     string       `db:"area_id" json:"area_id"`
 	Region     string       `db:"region" json:"region"`
 	BundleUrl  string       `db:"bundle_url" json:"bundle_url"`
-	Status     int32        `db:"status" json:"status"`
+	Status     string       `db:"status" json:"status"`
 	Replicas   int64        `db:"replicas" json:"replicas"`
 	CpuCores   int32        `db:"cpu_cores" json:"cpu_cores"`
 	Memory     float64      `db:"memory" json:"memory"`
