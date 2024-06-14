@@ -178,7 +178,16 @@ func UpdateProjectHandler(c *gin.Context) {
 		params.Replicas = project.Replicas
 	}
 
-	scheduler, err := GetRandomSchedulerAPI()
+	var (
+		scheduler *Scheduler
+	)
+
+	if params.AreaID == "" {
+		scheduler, err = GetRandomSchedulerAPI()
+	} else {
+		scheduler, err = GetSchedulerByAreaId(params.AreaID)
+	}
+
 	if err != nil {
 		c.JSON(http.StatusOK, respError(err))
 		return
@@ -222,7 +231,16 @@ func DeleteProjectHandler(c *gin.Context) {
 		return
 	}
 
-	scheduler, err := GetRandomSchedulerAPI()
+	var (
+		scheduler *Scheduler
+	)
+
+	if project.AreaID == "" {
+		scheduler, err = GetRandomSchedulerAPI()
+	} else {
+		scheduler, err = GetSchedulerByAreaId(project.AreaID)
+	}
+
 	if err != nil {
 		c.JSON(http.StatusOK, respError(err))
 		return
