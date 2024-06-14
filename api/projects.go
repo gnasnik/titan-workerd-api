@@ -92,6 +92,21 @@ func GetProjectsHandler(c *gin.Context) {
 		return
 	}
 
+	for _, project := range projects {
+		scheduler, err := GetSchedulerByAreaId(project.AreaID)
+		if err != nil {
+			continue
+		}
+
+		projectInfo, err := scheduler.Api.GetProjectInfo(c.Request.Context(), project.ProjectID)
+		if err != nil {
+			log.Errorf("api GetProjectInfo: %v", err)
+			continue
+		}
+
+		project.Status = projectInfo.State
+	}
+
 	c.JSON(http.StatusOK, respJSON(JsonObject{
 		"list":  projects,
 		"total": total,
@@ -235,8 +250,8 @@ func GetRegionsHandler(c *gin.Context) {
 	schedulers := GlobalServer.GetSchedulers()
 
 	type Region struct {
-		AreaId string   `json:"area_id"`
-		Region []string `json:"region"`
+		AreaId string         `json:"area_id"`
+		Region map[string]int `json:"region"`
 	}
 
 	var out []*Region

@@ -79,7 +79,7 @@ CREATE TABLE `project` (
 `area_id` varchar(128) NOT NULL DEFAULT '',
 `region` varchar(128) NOT NULL DEFAULT '',
 `bundle_url` text NOT NULL,
-`status` tinyint(4) NOT NULL DEFAULT 0,
+`status` varchar(128) NOT NULL DEFAULT '',
 `replicas` bigint(20) NOT NULL DEFAULT 0,
 `cpu_cores` int NOT NULL DEFAULT 0,
 `memory` float NOT NULL DEFAULT 0,

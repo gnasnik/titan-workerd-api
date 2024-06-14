@@ -11,7 +11,7 @@ import (
 	"github.com/gnasnik/titan-workerd-api/core/errors"
 	logging "github.com/ipfs/go-log"
 	"go.etcd.io/etcd/api/v3/mvccpb"
-	"math/rand/v2"
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
@@ -230,10 +230,10 @@ func GetRandomSchedulerAPI() (*Scheduler, error) {
 	//whitelist := []string{"Asia-Hong-Kong-2", "Asia-Hong-Kong-3", "Asia-Hong-Kong-15"}
 	whitelist := []string{"Asia-China-Guangdong-Shenzhen"}
 	for _, s := range schedulers {
-		if s.AreaId == whitelist[rand.IntN(len(whitelist))] {
+		if s.AreaId == whitelist[rand.Intn(len(whitelist))] {
 			return s, nil
 		}
 	}
 
-	return schedulers[rand.IntN(len(schedulers))], nil
+	return schedulers[rand.Intn(len(schedulers))], nil
 }
