@@ -249,8 +249,6 @@ func DeleteProjectHandler(c *gin.Context) {
 	err = scheduler.Api.DeleteProject(c.Request.Context(), &types.ProjectReq{UUID: projectId})
 	if err != nil {
 		log.Errorf("api: failed to delete project: %v", err)
-		c.JSON(http.StatusOK, respErrorWrapMessage(errors.ErrInternalServer, err.Error()))
-		return
 	}
 
 	err = dao.DeleteProjectById(c.Request.Context(), projectId)
