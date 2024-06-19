@@ -83,7 +83,7 @@ CREATE TABLE `project` (
 `replicas` bigint(20) NOT NULL DEFAULT 0,
 `cpu_cores` int NOT NULL DEFAULT 0,
 `memory` float NOT NULL DEFAULT 0,
-`expiration` datetime DEFAULT CURRENT_TIMESTAMP,
+`expiration` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 `node_ids` varchar(256) NOT NULL DEFAULT '',
 `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

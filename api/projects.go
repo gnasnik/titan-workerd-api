@@ -45,15 +45,16 @@ func DeployProjectHandler(c *gin.Context) {
 	projectId := uuid.NewString()
 
 	err = scheduler.Api.DeployProject(c.Request.Context(), &types.DeployProjectReq{
-		UUID:      projectId,
-		Name:      params.Name,
-		BundleURL: params.BundleUrl,
-		UserID:    params.UserID,
-		Replicas:  params.Replicas,
-		CPUCores:  int64(params.CpuCores),
-		Memory:    params.Memory,
-		AreaID:    params.Region,
-		NodeIDs:   strings.Split(params.NodeIds, ","),
+		UUID:       projectId,
+		Name:       params.Name,
+		BundleURL:  params.BundleUrl,
+		UserID:     params.UserID,
+		Replicas:   params.Replicas,
+		CPUCores:   int64(params.CpuCores),
+		Memory:     params.Memory,
+		AreaID:     params.Region,
+		Expiration: params.Expiration,
+		NodeIDs:    strings.Split(params.NodeIds, ","),
 	})
 	if err != nil {
 		log.Errorf("api: failed to deploy project: %v", err)

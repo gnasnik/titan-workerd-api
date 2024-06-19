@@ -5,7 +5,6 @@
 package model
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -44,21 +43,21 @@ type LocationEn struct {
 }
 
 type Project struct {
-	ID         int64        `db:"id" json:"id"`
-	UserID     string       `db:"user_id" json:"user_id"`
-	ProjectID  string       `db:"project_id" json:"project_id"`
-	Name       string       `db:"name" json:"name"`
-	AreaID     string       `db:"area_id" json:"area_id"`
-	Region     string       `db:"region" json:"region"`
-	BundleUrl  string       `db:"bundle_url" json:"bundle_url"`
-	Status     string       `db:"status" json:"status"`
-	Replicas   int64        `db:"replicas" json:"replicas"`
-	CpuCores   int32        `db:"cpu_cores" json:"cpu_cores"`
-	Memory     float64      `db:"memory" json:"memory"`
-	Expiration sql.NullTime `db:"expiration" json:"expiration"`
-	NodeIds    string       `db:"node_ids" json:"node_ids"`
-	CreatedAt  time.Time    `db:"created_at" json:"created_at"`
-	UpdatedAt  time.Time    `db:"updated_at" json:"updated_at"`
+	ID         int64     `db:"id" json:"id"`
+	UserID     string    `db:"user_id" json:"user_id"`
+	ProjectID  string    `db:"project_id" json:"project_id"`
+	Name       string    `db:"name" json:"name"`
+	AreaID     string    `db:"area_id" json:"area_id"`
+	Region     string    `db:"region" json:"region"`
+	BundleUrl  string    `db:"bundle_url" json:"bundle_url"`
+	Status     string    `db:"status" json:"status"`
+	Replicas   int64     `db:"replicas" json:"replicas"`
+	CpuCores   int32     `db:"cpu_cores" json:"cpu_cores"`
+	Memory     float64   `db:"memory" json:"memory"`
+	Expiration time.Time `db:"expiration" json:"expiration"`
+	NodeIds    string    `db:"node_ids" json:"node_ids"`
+	CreatedAt  time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type User struct {
