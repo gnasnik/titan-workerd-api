@@ -11,19 +11,30 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
+
+type DeployReq struct {
+	Name       string  `db:"name" json:"name"`
+	AreaID     string  `db:"area_id" json:"area_id"`
+	Region     string  `db:"region" json:"region"`
+	BundleUrl  string  `db:"bundle_url" json:"bundle_url"`
+	Replicas   int64   `db:"replicas" json:"replicas"`
+	CpuCores   int32   `db:"cpu_cores" json:"cpu_cores"`
+	Memory     float64 `db:"memory" json:"memory"`
+	Expiration string  `db:"expiration" json:"expiration"`
+	NodeIds    string  `db:"node_ids" json:"node_ids"`
+}
 
 func DeployProjectHandler(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	username := claims[identityKey].(string)
-	var params model.Project
+	var params DeployReq
 
 	if err := c.BindJSON(&params); err != nil {
 		c.JSON(http.StatusOK, respError(errors.ErrInvalidParams))
 		return
 	}
-
-	params.UserID = username
 
 	var (
 		scheduler *Scheduler
@@ -44,16 +55,17 @@ func DeployProjectHandler(c *gin.Context) {
 	params.AreaID = scheduler.AreaId
 	projectId := uuid.NewString()
 
+	expirationT, _ := time.Parse(time.DateTime, params.Expiration)
 	err = scheduler.Api.DeployProject(c.Request.Context(), &types.DeployProjectReq{
 		UUID:       projectId,
 		Name:       params.Name,
 		BundleURL:  params.BundleUrl,
-		UserID:     params.UserID,
+		UserID:     username,
 		Replicas:   params.Replicas,
 		CPUCores:   int64(params.CpuCores),
 		Memory:     params.Memory,
 		AreaID:     params.Region,
-		Expiration: params.Expiration,
+		Expiration: expirationT,
 		NodeIDs:    strings.Split(params.NodeIds, ","),
 	})
 	if err != nil {
@@ -62,9 +74,18 @@ func DeployProjectHandler(c *gin.Context) {
 		return
 	}
 
-	params.ProjectID = projectId
-
-	err = dao.AddProject(c.Request.Context(), &params)
+	err = dao.AddProject(c.Request.Context(), &model.Project{
+		ProjectID:  projectId,
+		UserID:     username,
+		AreaID:     params.AreaID,
+		Region:     params.Region,
+		BundleUrl:  params.BundleUrl,
+		Replicas:   params.Replicas,
+		CpuCores:   params.CpuCores,
+		Memory:     params.Memory,
+		Expiration: expirationT,
+		NodeIds:    params.NodeIds,
+	})
 	if err != nil {
 		log.Errorf("add project: %v", err)
 		c.JSON(http.StatusOK, respErrorWrapMessage(errors.ErrInternalServer, err.Error()))
