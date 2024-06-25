@@ -50,7 +50,7 @@ func GetProjectByUserId(ctx context.Context, option QueryOption) (int64, []*mode
 		return 0, nil, err
 	}
 
-	err = DB.SelectContext(ctx, &out, `SELECT * FROM project order by created_at DESC LIMIT ? OFFSET ?`, limit, offset)
+	err = DB.SelectContext(ctx, &out, `SELECT * FROM project where user_id = ? order by created_at DESC LIMIT ? OFFSET ?`, option.UserID, limit, offset)
 	if err != nil {
 		return 0, nil, err
 	}
