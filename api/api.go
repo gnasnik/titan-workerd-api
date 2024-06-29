@@ -172,7 +172,7 @@ func NewServer(cfg config.Config) (*Server, error) {
 
 	RegisterRouter(router, cfg)
 
-	ec, err := newEtcdClient(cfg.EtcdUser, cfg.EtcdPassword, []string{cfg.EtcdAddress})
+	ec, err := newEtcdClient(cfg.EtcdUser, cfg.EtcdPassword, cfg.EtcdAddresses)
 	if err != nil {
 		log.Errorf("New etcdClient Failed: %v", err)
 		return nil, err
