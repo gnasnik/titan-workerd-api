@@ -77,6 +77,7 @@ func DeployProjectHandler(c *gin.Context) {
 	err = dao.AddProject(c.Request.Context(), &model.Project{
 		ProjectID:  projectId,
 		UserID:     username,
+		Name:       params.Name,
 		AreaID:     params.AreaID,
 		Region:     params.Region,
 		BundleUrl:  params.BundleUrl,
@@ -126,6 +127,7 @@ func GetProjectsHandler(c *gin.Context) {
 			continue
 		}
 
+		project.Name = projectInfo.Name
 		project.Status = projectInfo.State
 	}
 
