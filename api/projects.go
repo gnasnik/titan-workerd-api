@@ -1,12 +1,14 @@
 package api
 
 import (
+	"fmt"
 	"github.com/Filecoin-Titan/titan/api/types"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/gnasnik/titan-workerd-api/core/dao"
 	"github.com/gnasnik/titan-workerd-api/core/errors"
 	"github.com/gnasnik/titan-workerd-api/core/generated/model"
+	"github.com/gnasnik/titan-workerd-api/utils"
 	"github.com/google/uuid"
 	"net/http"
 	"strconv"
@@ -56,6 +58,10 @@ func DeployProjectHandler(c *gin.Context) {
 	projectId := uuid.NewString()
 
 	expirationT, _ := time.Parse(time.DateTime, params.Expiration)
+	if expirationT.IsZero() {
+		expirationT = time.Now().AddDate(1, 0, 0)
+	}
+
 	err = scheduler.Api.DeployProject(c.Request.Context(), &types.DeployProjectReq{
 		UUID:       projectId,
 		Name:       params.Name,
@@ -155,7 +161,7 @@ func GetProjectInfoHandler(c *gin.Context) {
 
 	scheduler, err := GetSchedulerByAreaId(project.AreaID)
 	if err != nil {
-		c.JSON(http.StatusOK, respError(err))
+		c.JSON(http.StatusOK, respErrorWrapMessage(errors.ErrInternalServer, err.Error()))
 		return
 	}
 
@@ -167,6 +173,81 @@ func GetProjectInfoHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, respJSON(projectInfo))
+}
+
+func GetProjectTunnelsHandler(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	username := claims[identityKey].(string)
+	projectId := c.Query("project_id")
+
+	project, err := dao.GetProjectById(c.Request.Context(), projectId)
+	if err != nil {
+		c.JSON(http.StatusOK, respError(errors.ErrProjectNotExists))
+		return
+	}
+
+	if project.UserID != username {
+		c.JSON(http.StatusOK, respError(errors.ErrProjectNotExists))
+		return
+	}
+
+	externalIP := utils.GetClientIP(c.Request)
+
+	location, err := utils.GetLocationByIP(externalIP)
+	if err != nil {
+		c.JSON(http.StatusOK, respErrorWrapMessage(errors.ErrInternalServer, err.Error()))
+		return
+	}
+
+	var tuns []*model.ProjectTunnel
+	maybeBestScheduler, err := GetMaybeBestScheduler(GetAreaIdFromLocation(location))
+	if err != nil {
+		if err != errors.ErrNoAvailableScheduler {
+			c.JSON(http.StatusOK, respErrorWrapMessage(errors.ErrInternalServer, err.Error()))
+			return
+		}
+
+		scheduler, err := GetSchedulerByAreaId(project.AreaID)
+		if err != nil {
+			c.JSON(http.StatusOK, respErrorWrapMessage(errors.ErrInternalServer, err.Error()))
+			return
+		}
+
+		maybeBestScheduler = scheduler
+	}
+
+	tunRes, err := maybeBestScheduler.Api.GetTunserverURLFromUser(c.Request.Context(), &types.TunserverReq{
+		IP:     externalIP,
+		AreaID: GetAreaIdFromLocation(location),
+	})
+
+	if err != nil {
+		c.JSON(http.StatusOK, respErrorWrapMessage(errors.ErrInternalServer, err.Error()))
+		return
+	}
+
+	for _, tunnel := range []*types.TunserverRsp{tunRes} {
+		tuns = append(tuns, &model.ProjectTunnel{
+			ProjectId:   projectId,
+			TunnelIndex: int64(len(tuns)),
+			WsURL:       tunnel.URL,
+			NodeID:      tunnel.NodeID,
+		})
+	}
+
+	if err != nil {
+		log.Errorf("api: GetTunserverURLFromUser: %v", err)
+		c.JSON(http.StatusOK, respErrorWrapMessage(errors.ErrInternalServer, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, respJSON(JsonObject{
+		"tunnels": tuns,
+	}))
+}
+
+func GetAreaIdFromLocation(l *model.Location) string {
+	return fmt.Sprintf("%s-%s-%s-%s", l.Continent, l.Country, l.Province, l.City)
 }
 
 func UpdateProjectHandler(c *gin.Context) {

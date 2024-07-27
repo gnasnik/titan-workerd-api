@@ -219,6 +219,50 @@ func GetSchedulerByAreaId(areaId string) (*Scheduler, error) {
 	return nil, errors.ErrNoAvailableScheduler
 }
 
+func GetMaybeBestScheduler(areaId string) (*Scheduler, error) {
+	schedulers := GlobalServer.GetSchedulers()
+
+	var areaIds []string
+	for _, scheduler := range schedulers {
+		areaIds = append(areaIds, scheduler.AreaId)
+	}
+
+	maybeBest := findBestMatch(areaIds, areaId)
+
+	return GetSchedulerByAreaId(maybeBest)
+}
+
+// findBestMatch 用于找出数组中与目标字符串匹配最多的字符串
+func findBestMatch(stringsArr []string, target string) string {
+	var bestMatch string
+	maxMatchLength := 0
+
+	for _, str := range stringsArr {
+		matchLength := 0
+
+		// 将数组中的字符串和目标字符串都按照 '-' 分割
+		strParts := strings.Split(str, "-")
+		targetParts := strings.Split(target, "-")
+
+		// 比较分割后的每部分，计算匹配的长度
+		for i := 0; i < len(strParts) && i < len(targetParts); i++ {
+			if strParts[i] == targetParts[i] {
+				matchLength++
+			} else {
+				break
+			}
+		}
+
+		// 如果当前字符串的匹配长度更长，更新最佳匹配
+		if matchLength > maxMatchLength {
+			maxMatchLength = matchLength
+			bestMatch = str
+		}
+	}
+
+	return bestMatch
+}
+
 func GetRandomSchedulerAPI() (*Scheduler, error) {
 	schedulers := GlobalServer.GetSchedulers()
 

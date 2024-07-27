@@ -49,7 +49,7 @@ type LotusRespError struct {
 type errorCode int
 
 type Location struct {
-	ID          int64     `db:"id" json:"id"`
+	ID          int64     `db:"id" json:"-"`
 	Ip          string    `db:"ip" json:"ip"`
 	Continent   string    `db:"continent" json:"continent"`
 	Province    string    `db:"province" json:"province"`
@@ -64,4 +64,11 @@ type Location struct {
 	CreatedAt   time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
 	CountryCode string    `db:"-" json:"country_code"`
+}
+
+type ProjectTunnel struct {
+	ProjectId   string `db:"project_id" json:"project_id"`
+	NodeID      string `db:"node_id" json:"node_id"`
+	TunnelIndex int64  `db:"tunnel_index" json:"tunnel_index"`
+	WsURL       string `db:"ws_url" json:"ws_url"`
 }

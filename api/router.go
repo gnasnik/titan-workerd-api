@@ -29,6 +29,7 @@ func RegisterRouter(r *gin.Engine, cfg config.Config) {
 	project.Use(authMiddleware.MiddlewareFunc())
 	project.POST("/create", DeployProjectHandler)
 	project.GET("/info", GetProjectInfoHandler)
+	project.GET("/tunnels", GetProjectTunnelsHandler)
 	project.GET("/list", GetProjectsHandler)
 	project.POST("/delete", DeleteProjectHandler)
 	project.POST("/update", UpdateProjectHandler)

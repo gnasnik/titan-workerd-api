@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gnasnik/titan-workerd-api/core/generated/model"
 	"io"
 	"net"
 	"net/http"
@@ -38,26 +39,38 @@ func GetClientIP(r *http.Request) string {
 	return reqIP
 }
 
-func GetLocationByIP(ip string) string {
-	if IsPrivateIP(net.ParseIP(ip)) {
-		return "LAN"
-	}
-	resp, err := http.Get(fmt.Sprintf("http://whois.pconline.com.cn/ipJson.jsp?json=true&ip=%s", ip))
+func GetLocationByIP(ip string) (*model.Location, error) {
+	resp, err := http.Get(fmt.Sprintf("https://api-test1.container1.titannet.io/api/v2/location?ip=%s", ip))
 	if err != nil {
-		return ""
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	bytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return ""
+		return nil, err
 	}
 
-	info := map[string]string{}
-	err = json.Unmarshal(bytes, &info)
+	type response struct {
+		Code int         `json:"code"`
+		Data interface{} `json:"data"`
+	}
+
+	var res response
+	if err = json.Unmarshal(bytes, &res); err != nil {
+		return nil, err
+	}
+
+	locationBytes, err := json.Marshal(res.Data)
 	if err != nil {
-		return ""
+		return nil, err
 	}
 
-	return fmt.Sprintf("%s %s", info["pro"], info["city"])
+	var location model.Location
+	err = json.Unmarshal(locationBytes, &location)
+	if err != nil {
+		return nil, err
+	}
+
+	return &location, nil
 }

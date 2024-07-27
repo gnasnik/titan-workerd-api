@@ -23,53 +23,6 @@ PRIMARY KEY (`id`),
 UNIQUE KEY `uniq_username` (`username`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=2058 DEFAULT CHARSET=utf8mb4;
 
-
--- ----------------------------
--- Table structure for location_cn
--- ----------------------------
-DROP TABLE IF EXISTS `location_cn`;
-CREATE TABLE `location_cn` (
-`id` bigint(20) NOT NULL AUTO_INCREMENT,
-`ip` varchar(28) NOT NULL DEFAULT '',
-`continent` varchar(28) NOT NULL DEFAULT '',
-`country` varchar(128) NOT NULL DEFAULT '',
-`province` varchar(128) NOT NULL DEFAULT '',
-`city` varchar(128) NOT NULL DEFAULT '',
-`longitude` varchar(28) NOT NULL DEFAULT '',
-`area_code` varchar(28) NOT NULL DEFAULT '',
-`latitude` varchar(28) NOT NULL DEFAULT '',
-`isp` varchar(256) NOT NULL DEFAULT '',
-`zip_code` varchar(28) NOT NULL DEFAULT '',
-`elevation` varchar(28) NOT NULL DEFAULT '',
-`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (`id`),
-UNIQUE KEY `uniq_uuid` (`ip`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=42497 DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Table structure for location_en
--- ----------------------------
-DROP TABLE IF EXISTS `location_en`;
-CREATE TABLE `location_en` (
-`id` bigint(20) NOT NULL AUTO_INCREMENT,
-`ip` varchar(28) NOT NULL DEFAULT '',
-`continent` varchar(28) NOT NULL DEFAULT '',
-`country` varchar(128) NOT NULL DEFAULT '',
-`province` varchar(128) NOT NULL DEFAULT '',
-`city` varchar(128) NOT NULL DEFAULT '',
-`longitude` varchar(28) NOT NULL DEFAULT '',
-`area_code` varchar(28) NOT NULL DEFAULT '',
-`latitude` varchar(28) NOT NULL DEFAULT '',
-`isp` varchar(256) NOT NULL DEFAULT '',
-`zip_code` varchar(28) NOT NULL DEFAULT '',
-`elevation` varchar(28) NOT NULL DEFAULT '',
-`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (`id`),
-UNIQUE KEY `uniq_uuid` (`ip`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=42492 DEFAULT CHARSET=utf8mb4;
-
 DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project` (
 `id` bigint(20) NOT NULL AUTO_INCREMENT,
