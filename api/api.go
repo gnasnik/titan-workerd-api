@@ -12,7 +12,9 @@ import (
 	logging "github.com/ipfs/go-log"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	"math/rand"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -31,6 +33,7 @@ type Server struct {
 type Scheduler struct {
 	Url    string
 	AreaId string
+	IP     string
 	Api    api.Scheduler
 	Closer func()
 }
@@ -140,18 +143,41 @@ func (s *Server) fetchSchedulersFromEtcd(ctx context.Context) ([]*Scheduler, err
 	var schedulers []*Scheduler
 
 	for key, schedulerURLs := range schedulerConfigs {
-		for _, SchedulerCfg := range schedulerURLs {
+		for _, schedulerCfg := range schedulerURLs {
 			// https protocol still in test, we use http for now.
-			schedulerURL := strings.Replace(SchedulerCfg.SchedulerURL, "https", "http", 1)
+			schedulerURL := strings.Replace(schedulerCfg.SchedulerURL, "https", "http", 1)
 			headers := http.Header{}
-			headers.Add("Authorization", "Bearer "+SchedulerCfg.AccessToken)
+			headers.Add("Authorization", "Bearer "+schedulerCfg.AccessToken)
 			clientInit, closeScheduler, err := client.NewScheduler(ctx, schedulerURL, headers)
 			if err != nil {
 				log.Errorf("create Scheduler rpc client: %v", err)
 			}
+
+			sUrl, err := url.Parse(schedulerCfg.SchedulerURL)
+			if err != nil {
+				log.Errorf("parse scheduler url: %v", err)
+			}
+
+			var schedulerIP string
+
+			sIP := net.ParseIP(sUrl.Host)
+			if sIP.String() != "" {
+				schedulerIP = sIP.String()
+			} else {
+				addr, err := net.ResolveIPAddr("ip", sIP.String())
+				if err != nil {
+					log.Errorf("resolove ip addr: %v", err)
+				}
+
+				if addr != nil {
+					schedulerIP = addr.IP.String()
+				}
+			}
+
 			schedulers = append(schedulers, &Scheduler{
 				Url:    schedulerURL,
 				Api:    clientInit,
+				IP:     schedulerIP,
 				AreaId: key,
 				Closer: closeScheduler,
 			})
@@ -263,6 +289,29 @@ func findBestMatch(stringsArr []string, target string) string {
 	return bestMatch
 }
 
+func GetNearestScheduler(ctx context.Context, queryIP string) (*Scheduler, error) {
+	coordinate := NewIPCoordinate()
+
+	var schedulerIPs []string
+	for _, s := range GlobalServer.GetSchedulers() {
+		schedulerIPs = append(schedulerIPs, s.IP)
+	}
+
+	result, err := GetUserNearestIP(ctx, queryIP, schedulerIPs, coordinate)
+	if err != nil {
+		log.Errorf("get nearest ip: %v", err)
+		return nil, err
+	}
+
+	for _, scheduler := range GlobalServer.GetSchedulers() {
+		if scheduler.IP == result {
+			return scheduler, nil
+		}
+	}
+
+	return nil, errors.New("scheduler not found")
+}
+
 func GetRandomSchedulerAPI() (*Scheduler, error) {
 	schedulers := GlobalServer.GetSchedulers()
 
@@ -280,4 +329,17 @@ func GetRandomSchedulerAPI() (*Scheduler, error) {
 	}
 
 	return schedulers[rand.Intn(len(schedulers))], nil
+}
+
+func GetSchedulerByNodeId(nodeId string) (*Scheduler, error) {
+	schedulers := GlobalServer.GetSchedulers()
+
+	for _, scheduler := range schedulers {
+		_, err := scheduler.Api.GetNodeInfo(context.Background(), nodeId)
+		if err == nil {
+			return scheduler, nil
+		}
+	}
+
+	return nil, errors.ErrNoAvailableScheduler
 }

@@ -35,7 +35,8 @@ CREATE TABLE `project` (
 `status` varchar(128) NOT NULL DEFAULT '',
 `replicas` bigint(20) NOT NULL DEFAULT 0,
 `cpu_cores` int NOT NULL DEFAULT 0,
-`memory` float NOT NULL DEFAULT 0,
+`memory` bigint(20) NOT NULL DEFAULT 0,
+`version` bigint(20) NOT NULL DEFAULT 0,
 `expiration` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 `node_ids` varchar(256) NOT NULL DEFAULT '',
 `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -43,3 +44,50 @@ CREATE TABLE `project` (
 PRIMARY KEY (`id`),
 UNIQUE KEY `uniq_project_id` (`project_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+
+-- ----------------------------
+-- Table structure for location_cn
+-- ----------------------------
+DROP TABLE IF EXISTS `location_cn`;
+CREATE TABLE `location_cn` (
+`id` bigint(20) NOT NULL AUTO_INCREMENT,
+`ip` varchar(28) NOT NULL DEFAULT '',
+`continent` varchar(28) NOT NULL DEFAULT '',
+`country` varchar(128) NOT NULL DEFAULT '',
+`province` varchar(128) NOT NULL DEFAULT '',
+`city` varchar(128) NOT NULL DEFAULT '',
+`longitude` varchar(28) NOT NULL DEFAULT '',
+`area_code` varchar(28) NOT NULL DEFAULT '',
+`latitude` varchar(28) NOT NULL DEFAULT '',
+`isp` varchar(256) NOT NULL DEFAULT '',
+`zip_code` varchar(28) NOT NULL DEFAULT '',
+`elevation` varchar(28) NOT NULL DEFAULT '',
+`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+UNIQUE KEY `uniq_uuid` (`ip`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=42497 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Table structure for location_en
+-- ----------------------------
+DROP TABLE IF EXISTS `location_en`;
+CREATE TABLE `location_en` (
+`id` bigint(20) NOT NULL AUTO_INCREMENT,
+`ip` varchar(28) NOT NULL DEFAULT '',
+`continent` varchar(28) NOT NULL DEFAULT '',
+`country` varchar(128) NOT NULL DEFAULT '',
+`province` varchar(128) NOT NULL DEFAULT '',
+`city` varchar(128) NOT NULL DEFAULT '',
+`longitude` varchar(28) NOT NULL DEFAULT '',
+`area_code` varchar(28) NOT NULL DEFAULT '',
+`latitude` varchar(28) NOT NULL DEFAULT '',
+`isp` varchar(256) NOT NULL DEFAULT '',
+`zip_code` varchar(28) NOT NULL DEFAULT '',
+`elevation` varchar(28) NOT NULL DEFAULT '',
+`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+UNIQUE KEY `uniq_uuid` (`ip`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=42492 DEFAULT CHARSET=utf8mb4;

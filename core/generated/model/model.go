@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+type Language string
+
+const (
+	LanguageEN = "en"
+	LanguageCN = "cn"
+)
+
 type LotusRequest struct {
 	Jsonrpc string     `json:"jsonrpc"`
 	Method  string     `json:"method"`

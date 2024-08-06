@@ -8,8 +8,8 @@ import (
 
 func AddProject(ctx context.Context, project *model.Project) error {
 	_, err := DB.NamedExecContext(ctx, fmt.Sprintf(`
-		INSERT INTO project ( user_id, project_id, name, area_id, region, bundle_url, status, replicas, cpu_cores, memory, expiration, created_at, updated_at)
-			VALUES (:user_id, :project_id, :name, :area_id, :region, :bundle_url, :status, :replicas, :cpu_cores, :memory, :expiration, now(), now());`,
+		INSERT INTO project ( user_id, project_id, name, area_id, region, bundle_url, status, replicas, cpu_cores, memory, expiration, version, created_at, updated_at)
+			VALUES (:user_id, :project_id, :name, :area_id, :region, :bundle_url, :status, :replicas, :cpu_cores, :memory, :expiration, :version, now(), now());`,
 	), project)
 	return err
 }

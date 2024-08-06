@@ -10,4 +10,10 @@ type Config struct {
 	EtcdAddresses []string
 	EtcdUser      string
 	EtcdPassword  string
+	IpDataCloud   IpDataCloudConfig
+}
+
+type IpDataCloudConfig struct {
+	Url string
+	Key string
 }

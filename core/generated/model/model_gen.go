@@ -8,6 +8,40 @@ import (
 	"time"
 )
 
+type LocationCn struct {
+	ID        int64     `db:"id" json:"id"`
+	Ip        string    `db:"ip" json:"ip"`
+	Continent string    `db:"continent" json:"continent"`
+	Country   string    `db:"country" json:"country"`
+	Province  string    `db:"province" json:"province"`
+	City      string    `db:"city" json:"city"`
+	Longitude string    `db:"longitude" json:"longitude"`
+	AreaCode  string    `db:"area_code" json:"area_code"`
+	Latitude  string    `db:"latitude" json:"latitude"`
+	Isp       string    `db:"isp" json:"isp"`
+	ZipCode   string    `db:"zip_code" json:"zip_code"`
+	Elevation string    `db:"elevation" json:"elevation"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+}
+
+type LocationEn struct {
+	ID        int64     `db:"id" json:"id"`
+	Ip        string    `db:"ip" json:"ip"`
+	Continent string    `db:"continent" json:"continent"`
+	Country   string    `db:"country" json:"country"`
+	Province  string    `db:"province" json:"province"`
+	City      string    `db:"city" json:"city"`
+	Longitude string    `db:"longitude" json:"longitude"`
+	AreaCode  string    `db:"area_code" json:"area_code"`
+	Latitude  string    `db:"latitude" json:"latitude"`
+	Isp       string    `db:"isp" json:"isp"`
+	ZipCode   string    `db:"zip_code" json:"zip_code"`
+	Elevation string    `db:"elevation" json:"elevation"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+}
+
 type Project struct {
 	ID         int64     `db:"id" json:"id"`
 	UserID     string    `db:"user_id" json:"user_id"`
@@ -19,7 +53,8 @@ type Project struct {
 	Status     string    `db:"status" json:"status"`
 	Replicas   int64     `db:"replicas" json:"replicas"`
 	CpuCores   int32     `db:"cpu_cores" json:"cpu_cores"`
-	Memory     float64   `db:"memory" json:"memory"`
+	Memory     int64     `db:"memory" json:"memory"`
+	Version    int64     `db:"version" json:"version"`
 	Expiration time.Time `db:"expiration" json:"expiration"`
 	NodeIds    string    `db:"node_ids" json:"node_ids"`
 	CreatedAt  time.Time `db:"created_at" json:"created_at"`
