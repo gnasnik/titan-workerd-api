@@ -91,6 +91,10 @@ func DeployProjectHandler(c *gin.Context) {
 
 	for _, scheduler := range schedulers {
 		areaIds = append(areaIds, scheduler.AreaId)
+		var nodeIds []string
+		if params.NodeIds != "" {
+			nodeIds = strings.Split(params.NodeIds, ",")
+		}
 		err := scheduler.Api.DeployProject(c.Request.Context(), &types.DeployProjectReq{
 			UUID:      projectId,
 			Name:      params.Name,
@@ -101,7 +105,7 @@ func DeployProjectHandler(c *gin.Context) {
 				CPUCores: int64(params.CpuCores),
 				Memory:   params.Memory,
 				AreaID:   params.Region,
-				NodeIDs:  strings.Split(params.NodeIds, ","),
+				NodeIDs:  nodeIds,
 				Version:  params.Version,
 			},
 			Expiration: expirationT,
